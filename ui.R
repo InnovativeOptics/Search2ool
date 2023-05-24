@@ -5,9 +5,11 @@ library(tidyverse)
 our_data <- readxl::read_excel("data/Master_1.xlsx",
                                sheet = "Lens_details")
 
-oem_data <- readxl::read_excel("data/Master_1.xlsx",
-                               sheet = "Laser_types") %>% 
-  drop_na(`Eyewear Requirement`, `Compatible Lens 1`)
+# oem_data <- readxl::read_excel("data/Master_1.xlsx",
+#                                sheet = "Laser_types")  %>% 
+#   drop_na(`Eyewear Requirement`, `Compatible Lens 1`)
+
+oem_data <- read.csv("data/oemDataSearch.csv") 
 
 page_fluid(theme = bs_add_variables(
   bs_theme(
@@ -15,90 +17,64 @@ page_fluid(theme = bs_add_variables(
     base_font = font_google("Karla"),
     bg = "white",
     fg = "black",
-    primary = "royalblue"
+    primary = "#00a033"
   ),
-  "border-radius" = "1px"
+  "border-radius" = "5px"
 ),
 navs_tab_card(
   nav(
-    title = h2(strong("Search by laser type")),
+    title = h3(strong("Search by laser type")),
     fluidRow(
-      column(4, align = 'center', h3(
-        strong("Select your device")
+      column(4, align = 'center', h4(
+        strong("Select your device information")
       ))
       ,
       column(4,
              align = 'center',
-             h5(
+             
                selectInput(
-                 width = "20em",
                  inputId = "mfg",
-                 label = strong("Manufacturer"),
+                 label = h4(strong("Manufacturer")),
                  choices = sort(unique(oem_data$`Mfg`)),
                  selected = NULL,
                )
-             )),
+             ),
       column(4, align = 'center',
-             h5(
+             
                selectInput(
-                 width = "20em",
                  inputId = "mod",
-                 label = strong("Model"),
+                 label = h4(strong("Model")),
                  choices = NULL,
                  selected = NULL
                )
-             ))
+             )
     ),
-      fluidRow(
-        column(6,
-               # print confirmation statement
-               h5(tableOutput("laserInfo")), align =
-                 'center'),
-        column(6, align = 'center', h4(strong(em(
-          textOutput("devName")
-        ))))
-      )
-      ,
-      h5(
-        fluidRow(
-          column(8,
-                 tableOutput("prod1"),
-                 align = 'center'),
-          column(4,
-                 h4(strong(
-                   htmlOutput("link_Lens1")
-                 )),
-                 htmlOutput("image_Lens1"),
-                 align = 'center')
-        ),
-        
-        fluidRow(
-          column(8,
-                 tableOutput("prod2"),
-                 align = 'center'),
-          column(4,
-                 h4(strong(
-                   htmlOutput("link_Lens2")
-                 )),
-                 htmlOutput("image_Lens2"),
-                 align = 'center')
-        ),
-        fluidRow(
-          column(8,
-                 tableOutput("prod3"),
-                 align = 'center'),
-          column(4,
-                 strong(htmlOutput("link_Lens3")),
-                 htmlOutput("image_Lens3"),
-                 align = 'center')
-        )
-    )
+      # fluidRow(
+      #   column(6, align = 'center', h4(strong(em(
+      #     textOutput("devName")
+      #   )))),
+      #   column(6,
+      #          # print confirmation statement
+      #          h5(tableOutput("laserInfo")), align =
+      #            'right')
+      # )
+      # ,
+    conditionalPanel("output.linksOEM",fluidRow(column(12,align='center',
+                                                       h3(em("Compatible Lenses"))))),
+        fluidRow(column(12, align = 'center', h1(uiOutput(
+          "linksOEM"
+        )))),
+        fluidRow(column(12, align = 'center', h2(uiOutput(
+          "imagesOEM"
+        )))),
+        fluidRow(column(12, h5(uiOutput("tablesOEM"))))
+    
   ),
   nav(
-    title = h2(strong("Search by wavelength")),
+    title = h3(strong("Search by wavelength")),
     fluidRow(
       column(4, align = "center",
-             h3(
+             h4(
                strong("Enter your required specifications")
              )),
       column(
@@ -127,8 +103,8 @@ navs_tab_card(
       )
     )
     ,
-    conditionalPanel("output.links",
-                     h3(em("Compatible Lenses"))),
+    conditionalPanel("output.links",fluidRow(column(12,align='center',
+                     h3(em("Compatible Lenses"))))),
     fluidRow(column(12, align = 'center', h1(uiOutput(
       "links"
     )))),
@@ -136,8 +112,9 @@ navs_tab_card(
       "images"
     )))),
     fluidRow(column(12, h5(uiOutput("tables"))))
-  ),
-  card_footer(h3(
+  )),
+  card_footer(
+    h4(
     a(href = "https://innovativeoptics.com/contact/", "Contact Us")
   ))
-))
+)
